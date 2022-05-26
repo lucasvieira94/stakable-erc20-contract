@@ -1,4 +1,4 @@
-# ERC-20 Fungible Token Smart Contract
+# Stakable ERC-20 Smart Contract
 
 This project was implemented to educational purposes. Use as you wish.
 
