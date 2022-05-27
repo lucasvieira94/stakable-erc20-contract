@@ -63,6 +63,12 @@ contract Stakable {
         return (totalReward, totalStaked);
     }
 
+    function _emptyHolderStakes(uint256 stakeholderId, uint256 stakesCount) internal {
+        for (uint256 stakeId = 0; stakeId < stakesCount; stakeId++) {
+            delete stakeholders[stakeholderId].stakes[stakeId];
+        }
+    }
+
     function _claimReward() internal returns (uint256) {
         require(stakeholderIds[msg.sender] != 0, "Stakable: address has nothing staked");
         uint256 stakeholderId = stakeholderIds[msg.sender];
@@ -71,8 +77,8 @@ contract Stakable {
         uint256 totalStaked;
         
         (totalReward, totalStaked) = _retrieveReward(stakeholderId, stakesCount);
-
-        stakeholders[stakeholderId].stakes = [Stake(msg.sender, totalStaked, block.timestamp)];
+        _emptyHolderStakes(stakeholderId, stakesCount);
+        stakeholders[stakeholderId].stakes.push(Stake(msg.sender, totalStaked, block.timestamp));
 
         return totalReward;
     }
@@ -88,11 +94,13 @@ contract Stakable {
         (totalReward, totalStaked) = _retrieveReward(stakeholderId, stakesCount);
 
         if (amount > totalStaked) {
-            stakeholders[stakeholderId].stakes = [Stake(msg.sender, 0, block.timestamp)];
+            _emptyHolderStakes(stakeholderId, stakesCount);
+            stakeholders[stakeholderId].stakes.push(Stake(msg.sender, 0, block.timestamp));
             totalUnstaked = totalReward + totalStaked;
         } else {
             uint256 remainingStake = totalStaked - amount;
-            stakeholders[stakeholderId].stakes = [Stake(msg.sender, remainingStake, block.timestamp)];
+            _emptyHolderStakes(stakeholderId, stakesCount);
+            stakeholders[stakeholderId].stakes.push(Stake(msg.sender, remainingStake, block.timestamp));            
             totalUnstaked = totalReward + amount;
         }
 
