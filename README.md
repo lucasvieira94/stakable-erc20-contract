@@ -14,3 +14,13 @@ To deploy:
 ```shell
 npx hardhat deploy
 ```
+
+To test:
+```shell
+npx hardhat test
+```
+
+To test only stake functionality:
+```shell
+npx hardhat test --grep stake
+```
